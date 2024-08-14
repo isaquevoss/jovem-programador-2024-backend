@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Chat</title>
+	<style>
+		.chat-container {
+			width: 400px;
+			height: 500px;
+			border: 20px solid #ccc;
+			padding: 10px;
+			overflow-y: scroll;
+		}
+        .user{
+            display: flex;
+            margin-top: 10px;
+            padding: 10px;
+        }
+		
+		.message {
+			background-color: #f2f2f2;
+			padding: 10px;
+			margin-bottom: 10px;
+		}
+		
+		.message.sender {
+			background-color: #d9edf7;
+		}
+		
+		.message.receiver {
+			background-color: #dff0d8;
+            text-align: end;
+		}
+		
+		.input-container {
+			margin-top: 10px;
+		}
+		
+		.input-container input[type="text"] {
+			width: 300px;
+			padding: 5px;
+		}
+		
+		.input-container input[type="submit"] {
+			padding: 5px 10px;
+			background-color: #4CAF50;
+			color: white;
+			border: none;
+		}
+	</style>
+</head>
+<body>
+
+    <div class="user">
+        <label for="name">Digite seu nome:</label>
+        <input type="text" id="nome">
+
+    </div>
+    
+	<div class="chat-container">
+        <div class="message sender">Olá, tudo bem?</div>
+	</div>
+	
+	<div class="input-container">
+		<input id="mensagem" type="text" placeholder="Type your message">
+		<input id="btn-enviar" type="submit" value="Send">
+	</div>
+<script>
+    function addMensagem(mensagem, nome, sender = false){
+        var chatContainer = document.querySelector('.chat-container');
+        var message = document.createElement('div');
+        message.classList.add('message');
+        if(sender){
+            message.classList.add('sender');
+        }else{
+            message.classList.add('receiver');
+        }
+        message.innerHTML = '<span>'+nome+':</span> '+mensagem;
+        chatContainer.appendChild(message);
+    }
+
+    document.getElementById('btn-enviar').addEventListener('click', function(){
+        var mensagem = document.getElementById('mensagem').value;
+        var nome = document.getElementById('nome').value;
+		enviarMensagem();
+        addMensagem(mensagem, nome);
+        document.getElementById('mensagem').value = '';
+    });
+
+	async function buscarMensagens(){
+		var request = await fetch('http://localhost:3000/mensagens')
+		var resposta = await request.json();
+		console.log(resposta);
+		var chatContainer = document.querySelector('.chat-container');
+		chatContainer.innerHTML = '';
+		for(var i = 0; i< resposta.length; i++){
+			var mensagem = resposta[i];
+			addMensagem(mensagem.mensagem, mensagem.usuario, mensagem.usuario !== document.getElementById('nome').value);
+		}
+	}
+
+	async function enviarMensagem(){
+		var mensagem = document.getElementById('mensagem').value;
+		var usuario = document.getElementById('nome').value;
+		var dados = {
+			mensagem: mensagem,
+			usuario: usuario 
+		}
+		await fetch('http://localhost:3000/mensagens', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify( dados ),
+		});
+	}
+	setInterval(buscarMensagens, 1000);	
+
+</script>
+
+</body>
+
+</html>
