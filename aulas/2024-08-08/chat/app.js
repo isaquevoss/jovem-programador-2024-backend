@@ -1,5 +1,8 @@
 //no terminal
+//npm init -y
 //npm install express body-parser cors
+//criar arquivo app.js
+//escrever o código abaixo
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -8,6 +11,8 @@ const cors = require('cors');
 const app = express();
 app.use(cors('*'));
 app.use(bodyParser.json());
+
+app.use(express.static('./public'));
 
 app.listen(3000, () => {
     console.log('app está rodando http://localhost:3000');
@@ -29,5 +34,4 @@ app.post('/mensagens', (req, res) => {
     res.json(mensagem)
 });
 
-
-//node app.js e acesse localhost:3000/mensagens
+// //node app.js e acesse localhost:3000/mensagens

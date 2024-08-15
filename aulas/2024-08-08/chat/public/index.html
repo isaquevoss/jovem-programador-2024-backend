@@ -85,9 +85,18 @@
         addMensagem(mensagem, nome);
         document.getElementById('mensagem').value = '';
     });
+	document.getElementById('mensagem').addEventListener('keypress', async function(e){
+		var request = await fetch('http://10.10.79.128:3000/mensagens-em-edicao', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify( {mensagem: document.getElementById('mensagem').value, usuario: document.getElementById('nome').value} ),
+		});
+	});
 
 	async function buscarMensagens(){
-		var request = await fetch('http://localhost:3000/mensagens')
+		var request = await fetch('http://10.10.79.128:3000/mensagens')
 		var resposta = await request.json();
 		console.log(resposta);
 		var chatContainer = document.querySelector('.chat-container');
@@ -105,7 +114,7 @@
 			mensagem: mensagem,
 			usuario: usuario 
 		}
-		await fetch('http://localhost:3000/mensagens', {
+		await fetch('http://10.10.79.128:3000/mensagens', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'

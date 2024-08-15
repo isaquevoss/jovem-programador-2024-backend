@@ -1,0 +1,10 @@
+no terminal
+npm init -y 
+npm install express body-parser cors
+vericar o package.json se na parte de dependencias tem as dependencias instaladas
+
+criar o arquivo app.js
+
+
+para rodar aplicação 
+node app.js
