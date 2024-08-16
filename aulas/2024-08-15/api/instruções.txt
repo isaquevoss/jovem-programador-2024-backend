@@ -1,0 +1,7 @@
+npm init -y
+npm install express body-parser cors
+
+criar arquivo app.js
+
+para rodar a aplicação 
+node app.js
