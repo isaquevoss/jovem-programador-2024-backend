@@ -1,0 +1,19 @@
+abrir o terminal
+npm init -y
+npm install express body-parser cors
+criar um arquivo chamado app.js
+dentro do arquivo digitar o código abaixo
+
+const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+
+const app = express();
+app.use(cors('*'));
+app.use(bodyParser.json());
+
+app.listen(3000, () => {
+    console.log('Servidor rodando na porta 3000');
+});
+
+node app.js

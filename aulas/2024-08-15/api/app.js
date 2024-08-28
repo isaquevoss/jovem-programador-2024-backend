@@ -26,11 +26,23 @@ app.get('/clientes', function (req, res) {
     res.json(db.clientes);
 });
 
+app.get('/produtos', function (req, res) {
+    res.json(db.produtos);
+});
+
 app.post('/clientes', function (req,res) {
     var cliente = req.body;
     cliente.id = db.clientes.length + 1;
     db.clientes.push(cliente);
     res.json(cliente);
+});
+
+
+app.post('/produtos', function (req,res) {
+    var produto = req.body;
+    produto.id = db.produtos.length + 1;
+    db.produtos.push(produto);
+    res.json(produto);
 });
 
 app.get('/clientes/:id', function (req, res) {
@@ -39,4 +51,12 @@ app.get('/clientes/:id', function (req, res) {
         return cliente.id == id
     });
     res.json(cliente);
+});
+
+app.get('/produtos/:id', function (req, res) {
+    var id = req.params.id;
+    var produto = db.produtos.find(function (produto) {
+        return produto.id == id
+    });
+    res.json(produto);
 });
