@@ -8,7 +8,6 @@ app.use(cors('*'))
 app.use(bodyParser.json())
 
 const { Client } = require('pg')
-const { user } = require('pg/lib/defaults')
 
 async function conectarPostgres() {
     const client = new Client({
