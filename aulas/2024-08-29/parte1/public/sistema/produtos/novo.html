@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Novo Produto</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Cadastrar Novo Produto</h1>
+        <form id="produtoForm">
+            <div class="form-group">
+                <label for="nome">Nome:</label>
+                <input type="text" class="form-control" id="nome" name="nome" required>
+            </div>
+            <div class="form-group">
+                <label for="preco">Preço:</label>
+                <input type="number" class="form-control" id="preco" name="preco" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Cadastrar</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('produtoForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            var nome = document.getElementById('nome').value;
+            var preco = document.getElementById('preco').value;
+
+            var data = {
+                nome: nome,
+                preco: preco
+            };
+
+            fetch('http://localhost:3000/produtos', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(function(response) {
+                if (response.ok) {
+                    alert('Produto cadastrado com sucesso!');
+                    document.getElementById('produtoForm').reset();
+                } else {
+                    alert('Erro ao cadastrar produto. Por favor, tente novamente.');
+                }
+            })
+            .catch(function(error) {
+                console.error('Erro:', error);
+                alert('Erro ao cadastrar produto. Por favor, tente novamente.');
+            });
+            window.location.href = '/sistema/produtos';
+        });
+        
+    </script>
+</body>
+</html>

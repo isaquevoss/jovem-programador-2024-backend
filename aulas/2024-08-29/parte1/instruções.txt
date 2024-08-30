@@ -1,0 +1,5 @@
+npm init -y
+npm install express body-parser cors pg
+criar arquivo app.js
+
+copiar o código da aula anterior 2024-08-28/parte2
