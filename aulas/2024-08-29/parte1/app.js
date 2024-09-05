@@ -1,10 +1,13 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const { Client } = require('pg');
+
 const app = express();
 
 app.use(cors('*'))
 app.use(bodyParser.json())
+
 
 app.use(express.static('public'));
 
@@ -12,14 +15,13 @@ app.listen(3000, () => {
     console.log('app rodando em http://localhost:3000')
 });
 
-const { Client } = require('pg');
 
 var client;
 
 async function conectarPostgres(){
     client = new Client({
         user: 'postgres',
-        host: 'localhost',
+        host: '127.0.0.1',
         database: 'postgres',
         password: 'postgres'//usar a senha do banco de vocês JovemP*2023
     })
@@ -32,9 +34,6 @@ async function conectarPostgres(){
 conectarPostgres();
 
 
-const db ={
-    produtos: []
-}
 async function buscarProdutos(query){
     var produtos = await client.query('select * from produtos');
     return produtos.rows;

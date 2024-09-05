@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Produto</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Editar Produto</h1>
+        <form id="editarProdutoForm">
+            <div class="form-group">
+                <label for="nome">Nome do Produto</label>
+                <input type="text" class="form-control" id="nome" name="nome" required>
+            </div>
+            <div class="form-group">
+                <label for="preco">Preço do Produto</label>
+                <input type="number" class="form-control" id="preco" name="preco" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Salvar</button>
+        </form>
+    </div>
+
+    <script>
+        // Função para buscar o produto pelo ID usando fetch
+        function buscarProduto(id) {
+            fetch(`http://localhost:3000/produtos/${id}`)
+                .then(response => response.json())
+                .then(produto => {
+                    document.getElementById('nome').value = produto.nome;
+                    document.getElementById('preco').value = produto.preco;
+                })
+                .catch(error => {
+                    console.error('Erro ao buscar o produto:', error);
+                });
+        }
+
+        // Obtém o ID do produto a partir dos parâmetros da URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const produtoId = urlParams.get('id');
+
+        // Chama a função para buscar o produto pelo ID
+        buscarProduto(produtoId);
+
+        // Lida com o envio do formulário
+        document.getElementById('editarProdutoForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const nome = document.getElementById('nome').value;
+            const preco = document.getElementById('preco').value;
+
+            // Fazer o request para atualizar o produto usando fetch
+            fetch(`http://localhost:3000/produtos/${produtoId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ nome, preco })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Produto atualizado com sucesso:', data);
+                    // Redirecionar para a página de listagem de produtos
+                    window.location.href = '/sistema/produtos';
+                })
+                .catch(error => {
+                    console.error('Erro ao atualizar o produto:', error);
+                });
+        });
+    </script>
+</body>
+</html>
