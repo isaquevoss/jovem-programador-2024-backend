@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const { Client } = require('pg');
+const jwt = require('jsonwebtoken');
 
 const app = express();
 
@@ -52,3 +53,38 @@ async function cadastrarNovoUsuario(req, res){
 
 app.post('/usuarios', cadastrarNovoUsuario);
 
+async function login(req, res){
+    var {email, senha} = req.body;
+    if(!email || !senha){
+        return res.status(400).json({erro: 'Email ou senha não informados'});
+    }
+    var usuario = await client.query('select * from usuarios where email = $1', [email]);
+    if(usuario.rows.length == 0){
+        return res.status(400).json({erro: 'Usuário ou senha inválidos'});
+    }
+    if (usuario.rows[0].senha != senha){
+        return res.status(400).json({erro: 'Usuário ou senha inválidos'});
+    }
+    res.json({
+        mensagem: 'Usuário logado com sucesso',
+        token: "token"
+    })
+}
+app.post('/login', login);
+
+async function verificarToken(req, res, next){
+    if (req.headers.authorization){
+        next();
+    }else {
+        res.status(401).json({mensagem: 'Usuário não está logado'});
+    }
+}
+app.use(verificarToken);
+
+
+async function buscarPublicacoes(req, res){
+    res.json({
+        mensagem: 'Rota para buscar publicacoes',
+    })
+}
+app.get('/publicacoes', buscarPublicacoes);
