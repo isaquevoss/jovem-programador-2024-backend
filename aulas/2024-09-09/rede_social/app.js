@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const { Client } = require('pg');
 const jwt = require('jsonwebtoken');
-const SECRET_KEY='minha-chave-secreta'
+const SECRET_KEY = 'minha-chave-secreta'
 
 const app = express();
 
@@ -70,17 +70,17 @@ async function login(req, res) {
         token: jwt.sign({
             usuario: usuario.rows[0],
             horarioDoToken: new Date()
-        }, SECRET_KEY,{ expiresIn: 3600 })
+        }, SECRET_KEY, { expiresIn: 3600 })
     })
 }
 app.post('/login', login);
 
 async function verificarToken(req, res, next) {
     if (req.headers.authorization) {
-        try{
+        try {
             jwt.verify(req.headers.authorization, SECRET_KEY)
             next();
-        }catch(error){
+        } catch (error) {
             console.log(error.message)
             res.status(401).json({ mensagem: 'Token inválido' });
         }
@@ -95,10 +95,12 @@ app.use(verificarToken);
 
 async function buscarPublicacoes(req, res) {
     const usuario = jwt.decode(req.headers.authorization).usuario;
-    res.json({
-        mensagem1: 'Essa rota irá retornar as publicações do usuário: ' + usuario.nome_usuario+ ' Nome'+usuario.nome,
-        usuarioId: usuario.id,
-        mensagem: 'Rota para buscar publicacoes',
-    })
+    var publicacoes = await client.query(`select usuarios.*, usuario_posts.* 
+        from usuario_posts
+        join usuario_amigos on usuario_amigos.amigo_usuario_id = usuario_posts.usuario_id
+        join usuarios on usuarios.id = usuario_amigos.amigo_usuario_id
+        where usuario_amigos.usuario_id = $1`, [usuario.id]);
+    res.json(publicacoes.rows);
 }
+
 app.get('/publicacoes', buscarPublicacoes);
