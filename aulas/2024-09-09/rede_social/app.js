@@ -43,7 +43,6 @@ async function cadastrarNovoUsuario(req, res) {
     if (usuario.rows.length > 0) {
         return res.status(400).json({ erro: 'Usuário já cadastrado' });
     }
-
     var novoUsuario = await client.query(`insert into usuarios 
         (nome, email, senha, nome_usuario, telefone, bio) 
         values ($1, $2, $3, $4, $5, $6) returning *`,
@@ -74,23 +73,31 @@ async function login(req, res) {
         }, SECRET_KEY,{ expiresIn: 3600 })
     })
 }
-//jwt.io
-
-
 app.post('/login', login);
 
 async function verificarToken(req, res, next) {
     if (req.headers.authorization) {
-        next();
+        try{
+            jwt.verify(req.headers.authorization, SECRET_KEY)
+            next();
+        }catch(error){
+            console.log(error.message)
+            res.status(401).json({ mensagem: 'Token inválido' });
+        }
     } else {
         res.status(401).json({ mensagem: 'Usuário não está logado' });
     }
 }
 app.use(verificarToken);
+//acessar a rota http://localhost:3000/publicacoes 
+//com o token no header Authorization
 
 
 async function buscarPublicacoes(req, res) {
+    const usuario = jwt.decode(req.headers.authorization).usuario;
     res.json({
+        mensagem1: 'Essa rota irá retornar as publicações do usuário: ' + usuario.nome_usuario+ ' Nome'+usuario.nome,
+        usuarioId: usuario.id,
         mensagem: 'Rota para buscar publicacoes',
     })
 }
