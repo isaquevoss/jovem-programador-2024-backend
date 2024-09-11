@@ -1,0 +1,5 @@
+insert into usuario_amigos(usuario_id,amigo_usuario_id) values (1,2)
+
+insert into usuario_amigos(usuario_id,amigo_usuario_id) values (1,3)
+insert into usuario_posts (legenda,media_url,usuario_id) values ('legenda 1', 'url-imagem', 2)
+insert into usuario_posts (legenda,media_url,usuario_id) values ('legenda 1', 'url-imagem', 3)
