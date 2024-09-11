@@ -1,0 +1,10 @@
+npm init -y
+npm install express body-parser cors pg
+criar arquivo app.js
+
+
+quem copiar a pasta toda do git,
+rodar: 
+npm install
+
+npm install jsonwebtoken
