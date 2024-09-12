@@ -104,3 +104,32 @@ async function buscarPublicacoes(req, res) {
 }
 
 app.get('/publicacoes', buscarPublicacoes);
+
+async function criarPublicacao(req, res) {
+    const usuario = jwt.decode(req.headers.authorization).usuario;
+    var publicacao = req.body;
+    if (!publicacao.legenda && !publicacao.media-url) {
+        res.status(400).json(
+            {erro: 'Legenda ou imagem da publicação não informada'}
+        );
+    }
+    var novaPublicao = await client.query(`insert into usuario_posts 
+        (usuario_id, legenda, media_url) 
+        values ($1, $2, $3) returning *`, 
+        [usuario.id, publicacao.legenda,publicacao.media_url]);
+
+    res.json(novaPublicao.rows[0]);
+}
+app.post('/publicacoes', criarPublicacao);
+
+async function adicionarAmigos(req, res){
+
+}
+
+async function buscarUsuariosNaoAmigos(req,res){
+
+}
+
+
+app.post('/amigos', adicionarAmigos);
+app.get('/usuarios-nao-amigos', buscarUsuariosNaoAmigos);
