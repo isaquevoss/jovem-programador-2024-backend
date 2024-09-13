@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rede Social</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
+
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <a class="navbar-brand" href="#">Rede Social</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
@@ -33,71 +36,106 @@
     <div class="container mt-4">
         <div class="row">
             <div class="col-md-8">
-                <form>
-                    <div class="form-group">
+                <div class="form-group">
                     <label for="postagem">Postagem</label>
                     <textarea class="form-control" id="postagem" rows="3"></textarea>
-                    <button type="submit" class="btn btn-primary mt-2">Publicar</button>
-                </form>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Postagem</h5>
-                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nunc in ultricies aliquet, nunc nunc tincidunt nunc, nec lacinia nunc nunc nec nunc. Nulla facilisi. Sed vitae nunc nec nunc.</p>
-                    </div>
+                    <button onclick="publicar()" class="btn btn-primary mt-2">Publicar</button>
+
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Sugestões de Amigos</h5>
-                        <ul id="usuarios-sugestoes" class="list-group">
-                            <li class="list-group-item">Amigo 1</li>
-                            <li class="list-group-item">Amigo 2</li>
-                            <li class="list-group-item">Amigo 3</li>
-                        </ul>
+            <div class="rows">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Sugestões de Amigos</h5>
+                            <ul id="usuarios-sugestoes" class="list-group">
+                                <li class="list-group-item">Amigo 1</li>
+                                <li class="list-group-item">Amigo 2</li>
+                                <li class="list-group-item">Amigo 3</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-    <script>
-        function carregarUsuariosNaoAmigos() {
-            var res = fetch('http://localhost:3000/api/usuarios-nao-amigos', {
-                method: 'GET',
-                headers: {
-                    authorization: 'Bearer ' + localStorage.getItem('token'),
-                }});
-            res = res.json();
-            $('#usuarios-sugestoes').html('');
-            res.forEach(element => {
-                $('#usuarios-sugestoes').append(`<li class="list-group-item">${element.nome} <a onclick=adicionarAmigo(${usuario.id})>Adicionar</a> </li>`);
-            });
-        }
-        carregarUsuariosNaoAmigos();
+        <script>
+            async function carregarUsuariosNaoAmigos() {
+                var res = await fetch('http://localhost:3000/usuarios-nao-amigos', {
+                    method: 'GET',
+                    headers: {
+                        authorization: localStorage.getItem('token'),
+                    }
+                });
+                res = await res.json();
+                $('#usuarios-sugestoes').html('');
+                res.forEach(element => {
+                    $('#usuarios-sugestoes').append(`<li class="list-group-item">${element.nome} <a class="btn btn-primary mt-2" onclick=adicionarAmigo(${element.id})>Adicionar</a> </li>`);
+                });
+            }
+            carregarUsuariosNaoAmigos();
 
-        function adicionarAmigo(id) {
-            var res = fetch('http://localhost:3000/adicionar-amigo', {
-                method: 'POST',
-                headers: {
-                    authorization: 'Bearer ' + localStorage.getItem('token'),
-                },
-                body: JSON.stringify({id: id}),
-            });
-            res = res.json();
-            res.then(() => {
-                carregarUsuariosNaoAmigos();
-            });
-        }
+            function adicionarAmigo(id) {
+                var res = fetch('http://localhost:3000/amigos', {
+                    method: 'POST',
+                    headers: {
+                        authorization: localStorage.getItem('token'),
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ amigo_id: id }),
+                });
+                res.then(() => {
+                    carregarUsuariosNaoAmigos();
+                });
+            }
 
-    </script>
+            async function carregarPublicacoes() {
+                var res = await fetch('http://localhost:3000/publicacoes', {
+                    method: 'GET',
+                    headers: {
+                        authorization: localStorage.getItem('token'),
+                    }
+                });
+                res = await res.json();
+                $('.col-posts').html('');
+                res.forEach(element => {
+                    $('.col-posts').append(`<div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            ${element.nome}
+                        </h5>
+                        <p class="card-text">
+                            ${element.legenda}
+                        </p>
+                    </div>
+                </div>
+            </div>`);
+                });
+
+            }
+
+         //   carregarPublicacoes();
+
+            async function publicar() {
+                var res = await fetch('http://localhost:3000/publicacoes', {
+                    method: 'POST',
+                    headers: {
+                        authorization: localStorage.getItem('token'),
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ legenda: $('#postagem').val() }),
+                });
+                res = await res.json();
+                carregarPublicacoes();
+
+            }
+
+        </script>
 </body>
+
 </html>

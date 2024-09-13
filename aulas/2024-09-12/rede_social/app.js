@@ -31,6 +31,9 @@ app.listen(3000, () => {
     console.log('app rodando em http://localhost:3000');
 });
 
+
+app.use(express.static('public'));
+
 async function cadastrarNovoUsuario(req, res) {
     // validar os dados do usuário, obrigar informar, nome, email , senha e nome de usuário
     // verificar se o email e o nome de usuário já estão cadastrados
@@ -99,7 +102,7 @@ async function buscarPublicacoes(req, res) {
         from usuario_posts
         join usuario_amigos on usuario_amigos.amigo_usuario_id = usuario_posts.usuario_id
         join usuarios on usuarios.id = usuario_amigos.amigo_usuario_id
-        where usuario_amigos.usuario_id = $1`, [usuario.id]);
+        where usuario_amigos.usuario_id = $1 or usuario_posts.usuario_id = $1`, [usuario.id]);
     res.json(publicacoes.rows);
 }
 
@@ -124,13 +127,14 @@ app.post('/publicacoes', criarPublicacao);
 
 async function adicionarAmigos(req, res){
     const usuario = jwt.decode(req.headers.authorization).usuario;
+    console.log(req.body)
     var amigoId = req.body.amigo_id;
     if(!amigoId){
-        res.status(400).json({erro: 'Id do amigo não informado'});
+        return res.status(400).json({erro: 'Id do amigo não informado'});
     }
     await client.query('insert into usuario_amigos (usuario_id, amigo_usuario_id) values ($1, $2)', [usuario.id, amigoId]);
     await client.query('insert into usuario_amigos (usuario_id, amigo_usuario_id) values ($1, $2)', [amigoId, usuario.id]);
-    return res.json({
+    res.json({
         mensagem: 'Amigo adicionado com sucesso'
     });
 }
