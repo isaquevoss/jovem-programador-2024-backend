@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        canvas {
+            border: 10px solid black;
+            height: 500px;
+            width: 500px;
+            image-rendering: pixelated;
+
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="20" height="20" ></canvas>
+    
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        const jogador = {
+            x: 0,
+            y: 0,
+            width: 1,
+            height: 1,
+            color: 'black'
+        }
+        function desenharJogador(jogador) {
+            ctx.fillStyle = jogador.color;
+            ctx.fillRect(jogador.x, jogador.y, jogador.width, jogador.height);
+        }
+
+        function limparTela() {
+            ctx.clearRect(0,0, canvas.width, canvas.height);
+        }
+        document.addEventListener('keydown', function(event) {
+            if (event.key == 'ArrowRight') {
+                jogador.x += 1;
+            }
+            if(event.key == 'ArrowLeft') {
+                jogador.x -= 1;
+            }
+            if(event.key == 'ArrowUp') {
+                jogador.y -= 1;
+            }
+            if(event.key == 'ArrowDown') {
+                jogador.y += 1;
+            }
+
+            limparTela()
+            desenharJogador(jogador);
+        })
+    </script>
+</body>
+
+</html>
