@@ -1,0 +1,7 @@
+{
+  "type": "module",
+  "dependencies": {
+    "bootstrap": "^5.3.3",
+    "js-datepicker": "^5.18.3"
+  }
+}

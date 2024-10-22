@@ -1,0 +1,11 @@
+.btn{
+    height: 100px;
+    width: 100px;
+}
+.btn.btn-cancelar{
+    background-color: red;
+}
+
+.btn.btn-confirmar{
+    background-color: green;
+}
