@@ -76,9 +76,14 @@
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        const socket = io('http://localhost:3000', {
+        if (!sessionStorage.getItem('nomeUsuario')) {
+            window.location = '/login';
+        }
+        const nomeUsuario = sessionStorage.getItem('nomeUsuario');
+
+        const socket = io('http://10.10.77.200:3000', {
             query: {
-                nomeUsuario: 'Isaque'
+                nomeUsuario: nomeUsuario
             }
         });
         const form = document.getElementById('form');
@@ -89,7 +94,7 @@
             e.preventDefault();
             if (input.value) {
                 socket.emit('chat message', input.value);
-                addMessage(input.value, 'sent');
+                addMessage({msg: input.value}, 'sent');
                 input.value = '';
             }
         });
@@ -100,7 +105,11 @@
 
         function addMessage(msg, type) {
             const item = document.createElement('li');
-            item.textContent = msg;
+            if (type == 'received') {
+                item.textContent = `${msg.nome}: ${msg.msg}`;    
+            } else {
+                item.textContent = msg.msg;
+            }
             item.classList.add(type);
             messages.appendChild(item);
             messages.scrollTop = messages.scrollHeight;
