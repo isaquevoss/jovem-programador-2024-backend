@@ -12,13 +12,14 @@ app.get('/', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-    console.log('a user connected');
+    console.log('a user connected with id: ',socket.id);
+    console.log('query', JSON.stringify(socket.handshake.query));
     socket.on('disconnect', () => {
         console.log('user disconnected');
     });
 
     socket.on('chat message', (msg) => {
-        io.emit('chat message', msg);
+        socket.broadcast.emit('chat message', msg);
     });
 });
 
