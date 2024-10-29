@@ -15,11 +15,13 @@ app.get('/login', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-    console.log('a user connected with id: ',socket.id);
+    console.log('a user connected with id: ', socket.id);
+    
     socket.broadcast.emit('usuario conectou', {
         id: socket.id,
         nome: socket.handshake.query.nomeUsuario
     });
+
     socket.on('disconnect', () => {
         socket.broadcast.emit('usuario desconectou', {
             id: socket.id,
