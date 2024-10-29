@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Style Chat</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f8f9fa;
+        }
+        .chat-window {
+            width: 100%;
+            max-width: 600px;
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: #e5ddd5;
+        }
+        .messages li {
+            list-style: none;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 75%;
+        }
+        .messages li.sent {
+            background-color: #dcf8c6;
+            align-self: flex-end;
+        }
+        .messages li.received {
+            background-color: #fff;
+            align-self: flex-start;
+        }
+        .form-inline {
+            display: flex;
+            padding: 10px;
+            background-color: #f0f0f0;
+        }
+        .form-inline input {
+            flex: 1;
+            margin-right: 10px;
+            border-radius: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+        .form-inline button {
+            border-radius: 20px;
+            padding: 10px 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-window card">
+        <div class="card-header bg-success text-white">Chat</div>
+        <div id="digitando"></div>
+        <ul id="messages" class="messages list-unstyled card-body"></ul>
+        <div class="card-footer">
+            <form id="form" class="form-inline">
+                <input id="input" class="form-control" autocomplete="off" placeholder="Type a message..." />
+                <button class="btn btn-success">Send</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        if (!sessionStorage.getItem('nomeUsuario')) {
+            window.location = '/login';
+        }
+        const nomeUsuario = sessionStorage.getItem('nomeUsuario');
+
+        const socket = io('http://10.10.77.200:3000', {
+            query: {
+                nomeUsuario: nomeUsuario
+            }
+        });
+        const form = document.getElementById('form');
+        const input = document.getElementById('input');
+        const messages = document.getElementById('messages');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (input.value) {
+                socket.emit('chat message', input.value);
+                addMessage({msg: input.value}, 'sent');
+                input.value = '';
+            }
+        });
+
+        socket.on('chat message', (msg) => {
+            addMessage(msg, 'received');
+        });
+
+        function addMessage(msg, type) {
+            const item = document.createElement('li');
+            if (type == 'received') {
+                if (msg.nome){
+                    item.textContent = `${msg.nome}: ${msg.msg}`;  
+                } else {
+                    item.textContent = msg.msg;
+                }
+            } else {
+                item.textContent = msg.msg;
+            }
+            item.classList.add(type);
+            messages.appendChild(item);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        document.getElementById('input').addEventListener('keydown', (e) => {
+            socket.emit('usuario digitando', document.getElementById('input').value)
+        })
+        
+        var timeOut;
+
+        socket.on('usuario digitando', (event) => {
+            if (timeOut) {
+                clearTimeout(timeOut)
+            }
+            document.getElementById('digitando').textContent = `${event.nome} está digitando...`
+            timeOut = setTimeout(() => {
+                document.getElementById('digitando').textContent = ''
+            }, 2000)
+        })
+
+        socket.on('usuario conectou', (event) => {
+            addMessage({msg: `${event.nome} entrou no chat`}, 'received')
+        })
+
+        socket.on('usuario desconectou', (event) => {
+            addMessage({msg: `${event.nome} saiu do chat`}, 'received')
+        })
+    </script>
+</body>
+</html>
