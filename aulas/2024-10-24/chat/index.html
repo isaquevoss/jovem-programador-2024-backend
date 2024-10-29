@@ -107,7 +107,12 @@
         function addMessage(msg, type) {
             const item = document.createElement('li');
             if (type == 'received') {
-                item.textContent = `${msg.nome}: ${msg.msg}`;    
+                if (msg.nome){
+                    item.textContent = `${msg.nome}: ${msg.msg}`;  
+                } else {
+                    item.textContent = msg.msg;
+                }
+  
             } else {
                 item.textContent = msg.msg;
             }
@@ -130,6 +135,14 @@
             timeOut = setTimeout(() => {
                 document.getElementById('digitando').textContent = ''
             }, 2000)
+        })
+
+        socket.on('usuario conectou', (event) => {
+            addMessage({msg: `${event.nome} entrou no chat`}, 'received')
+        })
+
+        socket.on('usuario desconectou', (event) => {
+            addMessage({msg: `${event.nome} saiu do chat`}, 'received')
         })
     </script>
 </body>
