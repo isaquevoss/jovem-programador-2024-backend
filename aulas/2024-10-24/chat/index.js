@@ -28,6 +28,13 @@ io.on('connection', (socket) => {
             nome: socket.handshake.query.nomeUsuario
         });
     });
+
+    socket.on('usuario digitando', (msg) => {
+        socket.broadcast.emit('usuario digitando', {
+            id: socket.id,
+            nome: socket.handshake.query.nomeUsuario
+        })
+    })
 });
 
 server.listen(3000, () => {

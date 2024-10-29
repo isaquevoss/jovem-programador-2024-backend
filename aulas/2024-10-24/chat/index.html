@@ -65,6 +65,7 @@
 <body>
     <div class="chat-window card">
         <div class="card-header bg-success text-white">Chat</div>
+        <div id="digitando"></div>
         <ul id="messages" class="messages list-unstyled card-body"></ul>
         <div class="card-footer">
             <form id="form" class="form-inline">
@@ -114,6 +115,22 @@
             messages.appendChild(item);
             messages.scrollTop = messages.scrollHeight;
         }
+
+        document.getElementById('input').addEventListener('keydown', (e) => {
+            socket.emit('usuario digitando', document.getElementById('input').value)
+        })
+        
+        var timeOut;
+
+        socket.on('usuario digitando', (event) => {
+            if (timeOut) {
+                clearTimeout(timeOut)
+            }
+            document.getElementById('digitando').textContent = `${event.nome} está digitando...`
+            timeOut = setTimeout(() => {
+                document.getElementById('digitando').textContent = ''
+            }, 2000)
+        })
     </script>
 </body>
 </html>
