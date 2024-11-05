@@ -1,0 +1,14 @@
+version: '3'
+services:
+  servico:
+    build:
+      context: .
+      dockerfile: Dockerfile_service
+    deploy:
+      replicas: 10
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: '0.4'
+          memory: 8M

@@ -1,0 +1,8 @@
+FROM node:latest
+
+
+COPY . /app 
+
+WORKDIR /app
+
+CMD ["node", "servico.js"]
