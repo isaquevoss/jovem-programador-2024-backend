@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class="sidebar">
+        <h5>Online Users</h5>
+        <ul id="online-users" class="list-unstyled"></ul>
+    </div>
+    <div class="chat-window card">
+        <div class="card-header bg-success text-white">Chat</div>
+        <div id="digitando"></div>
+        <ul id="messages" class="messages list-unstyled card-body"></ul>
+        <div class="card-footer">
+            <form id="form" class="form-inline">
+                <input id="input" class="form-control" autocomplete="off" placeholder="Digite..." />
+                <button class="btn btn-success">Send</button>
+            </form>
+        </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        //conectar no chat
+        var io;
+
+        function conectar() {
+            io = io('http://localhost:3000', {
+                query: {
+                    nomeUsuario: 'Isaque'
+                }
+            });
+            io.on('connect', () => {
+                console.log('Conectado');
+            });
+        }
+        conectar();
+
+        document.getElementById('form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const input = document.getElementById('input');
+            const mensagem = input.value;
+            input.value = '';
+            if (usuarioSelecionado){
+                io.emit('mensagem particular', {id: usuarioSelecionado, msg: mensagem});
+                adicionarMensagem('Você', mensagem);
+                return
+            }
+            io.emit('chat message', mensagem);
+            adicionarMensagem('Você', mensagem);
+        });
+        function adicionarMensagem(nome, mensagem) {
+            const messages = document.getElementById('messages');
+            const li = document.createElement('li');
+            li.textContent = `${nome}: ${mensagem}`;
+            messages.appendChild(li);
+        }
+
+        io.on('chat message', (msg) => {
+            adicionarMensagem(msg.nomeUsuario, msg.msg);
+        });
+
+        io.on('usuarios', (usuarios) => {
+            const onlineUsers = document.getElementById('online-users');
+            onlineUsers.innerHTML = '';
+            usuarios.forEach(usuario => {
+                const li = document.createElement('li');
+                li.id = usuario.id;
+                li.innerHTML = `<button onclick="mensagemParticular('${usuario.id}')" >${usuario.id}-${usuario.nomeUsuario}</button>`;
+                onlineUsers.appendChild(li);
+            });
+        });
+        var usuarioSelecionado = null;
+        function mensagemParticular(id) {
+            if (usuarioSelecionado){
+                document.getElementById(usuarioSelecionado).style.backgroundColor = 'white';
+                usuarioSelecionado = null;
+                return
+            }
+            usuarioSelecionado = id;
+            document.getElementById(id).style.backgroundColor = 'lightblue';
+            
+        }
+
+        //enviar mensagens
+
+        //receber mensagens
+
+        //enviar mensagem particular
+
+        //enviar evento de digitando
+
+    </script>
+
+</body>
+</html>
